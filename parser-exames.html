@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parser de Resultados de Exames</title>
+</head>
+<body>
+    <h1>Parser de Resultados de Exames</h1>
+    <p>Esta página é projetada para interpretar resultados de exames do formato da Prefeitura de São Paulo.</p>
+    <form id="exam-form">
+        <label for="exam-results">Cole os resultados dos exames:</label><br>
+        <textarea id="exam-results" rows="10" cols="50" placeholder="Cole aqui..."></textarea><br>
+        <button type="button" onclick="parseResults()">Parsear Resultados</button>
+    </form>
+    <h2>Resultados</h2>
+    <div id="parsed-results"></div>
+
+    <script>
+        function parseResults() {
+            const input = document.getElementById('exam-results').value;
+            const output = document.getElementById('parsed-results');
+            // Lógica para parsear os resultados
+            // Placeholder para futuras implementações
+            output.innerHTML = '<p>Resultados parseados aqui...</p>';
+        }
+    </script>
+</body>
+</html>
