@@ -122,108 +122,81 @@
     </div>
 
     <script>
-        function getValue(text, regex) {
-            let match = text.match(regex);
-            return match ? match[1].replace(",", ".") : null;
-        }
+function getBlock(text, start) {
+    let regex = new RegExp(start + "[\\s\\S]*?(?=\\n[A-Z]{3} -|$)");
+    let match = text.match(regex);
+    return match ? match[0] : "";
+}
 
-        function flag(text, regex) {
-            let match = text.match(regex);
-            return match && match[2] === "*" ? "↑" : "";
-        }
+function getValue(text, regex) {
+    let match = text.match(regex);
+    return match ? match[1].replace(",", ".") : null;
+}
 
-        function processar() {
-            let t = document.getElementById("input").value;
-            
-            if (!t.trim()) {
-                document.getElementById("output").innerHTML = '<span class="empty-output">Por favor, cole o texto dos resultados dos exames.</span>';
-                return;
-            }
-            
-            let out = [];
-            
-            function add(label, value) {
-                if (value) out.push(label + " " + value);
-            }
+function processar() {
+    let t = document.getElementById("input").value;
+    let out = [];
 
-            add("Ac úrico", getValue(t, /ACIDO URICO\s+([\d,]+)/));
-            add("B12", getValue(t, /VITAMINA B1\s+([\d,]+)/));
-            add("Ca", getValue(t, /CALCIO\s+([\d,]+)/));
-            add("ColT", getValue(t, /COLESTEROL\s+([\d,]+)/));
-            
-            let cpk = getValue(t, /CPK[\s\S]*?RESULTADO\s+([\d,]+)/);
-            let cpkFlag = flag(t, /(CPK[\s\S]*?RESULTADO\s+([\d,]+))[\s\S]*?(\*)/);
-            if (cpk) out.push("CPK " + cpk + cpkFlag);
-            
-            let creat = getValue(t, /CREATININA\s+([\d,]+)/);
-            let tfg = getValue(t, /TGF\s+([>\d,]+)/);
-            if (creat) out.push("Creat " + creat + (tfg ? " (TFGe " + tfg + ")" : ""));
-            
-            add("Glic", getValue(t, /GLI[\s\S]*?RESULTADO\s+([\d,]+)/));
-            add("HDL", getValue(t, /HDL[\s\S]*?RESULTADO\s+([\d,]+)/));
-            
-            let hba1c = getValue(t, /HGL\s+([\d,]+)/);
-            let eag = getValue(t, /GLICOSE ESTIMADA\s+([\d,]+)/);
-            if (hba1c) out.push("HbA1c " + hba1c + (eag ? " (eAG " + eag + ")" : ""));
-            
-            add("LDL", getValue(t, /LDL[\s\S]*?RESULTADO\s+([\d,]+)/));
-            
-            let mau = getValue(t, /RELAÇÃO\s+([\d,]+)/);
-            if (mau) out.push("MAU " + mau);
-            
-            add("PSA", getValue(t, /PSA[\s\S]*?RESULTADO\s+([\d,]+)/));
-            
-            let so = getValue(t, /SANGUE OCULTO\s+(NEG|POS)/i);
-            if (so) out.push("SO " + (so.toUpperCase() === "NEG" ? "neg" : "pos"));
-            
-            add("Na", getValue(t, /SOD\s+([\d,]+)/));
-            add("T4L", getValue(t, /T4L[\s\S]*?RESULTADO\s+([\d,]+)/));
-            
-            let tgo = getValue(t, /TGO\s+([\d,]+)/);
-            let tgoFlag = flag(t, /(TGO\s+([\d,]+))[\s\S]*?(\*)/);
-            if (tgo) out.push("TGO " + tgo + tgoFlag);
-            
-            let tgp = getValue(t, /TGP[\s\S]*?RESULTADO\s+([\d,]+)/);
-            let tgpFlag = flag(t, /(TGP[\s\S]*?RESULTADO\s+([\d,]+))[\s\S]*?(\*)/);
-            if (tgp) out.push("TGP " + tgp + tgpFlag);
-            
-            add("TG", getValue(t, /TRIGLICERIDES[\s\S]*?RESULTADO\s+([\d,]+)/));
-            add("TSH", getValue(t, /TSH[\s\S]*?RESULTADO\s+([\d,]+)/));
-            add("Ur", getValue(t, /URE[\s\S]*?RESULTADO\s+([\d,]+)/));
-            
-            // Urina tipo I
-            let ph = getValue(t, /PH\s+([\d,]+)/);
-            let dens = getValue(t, /DENSIDADE\s+([\d,]+)/);
-            let prot = getValue(t, /PROTEÍNAS\s+(\w+)/);
-            let nit = getValue(t, /NITRITO\s+(NEGATIVO|POSITIVO)/);
-            let leuco = getValue(t, /LEUCOCITOS\s+([\d,]+)/);
-            let hem = getValue(t, /HEMÁCIAS\s+([\d,]+)/);
-            let bact = getValue(t, /BACTÉRIAS\s+([>\d\.]+)/);
-            
-            if (ph || dens) {
-                out.push("U1 pH " + (ph || "-") + " - Dens " + (dens || "-") + " - Prot " + (prot ? prot.toLowerCase() : "-") + " - Nit " + (nit ? (nit.toLowerCase().includes("neg") ? "neg" : "pos") : "-") + " - Leuco " + (leuco || "-") + " - Hem " + (hem || "-") + " - Bact " + (bact || "-") );
-            }
-            
-            add("VitD", getValue(t, /VITD3\s+([\d,]+)/));
-            
-            let hoje = new Date();
-            let data = hoje.toLocaleDateString('pt-BR');
-            
-            if (out.length === 0) {
-                document.getElementById("output").innerHTML = '<span class="empty-output">Nenhum resultado foi encontrado. Verifique o formato do texto.</span>';
-            } else {
-                document.getElementById("output").innerHTML = "📅 <strong>" + data + "</strong><br>━━━━━━━━━━━━━━━━━<br>- " + out.join(" | ");
-            }
+    function add(label, value) {
+        if (value) out.push(label + " " + value);
+    }
+
+    // ===== BLOCO HEMOGRAMA =====
+    let hem = getBlock(t, "HEM - HEMOGRAMA");
+
+    if (hem) {
+        let hb = getValue(hem, /HEMOGLOBINA\s+([\d,]+)/);
+        let ht = getValue(hem, /HEMATOCRITO\s+([\d,]+)/);
+        let leuco = getValue(hem, /LEUCOCITOS\s+([\d,]+)/);
+        let plaq = getValue(hem, /PLAQUETAS\s+([\d,]+)/);
+
+        if (hb || ht || leuco || plaq) {
+            out.push(
+                "Hemograma Hb " + (hb || "-") +
+                " | Ht " + (ht || "-") +
+                " | Leuco " + (leuco || "-") +
+                " | Plaq " + (plaq || "-")
+            );
         }
-        
-        // Permitir processar com Enter
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('input').addEventListener('keydown', function(e) {
-                if (e.ctrlKey && e.key === 'Enter') {
-                    processar();
-                }
-            });
-        });
+    }
+
+    // ===== BLOCO URINA =====
+    let uri = getBlock(t, "URI - URINA TIPO I");
+
+    if (uri) {
+        let ph = getValue(uri, /PH\s+([\d,]+)/);
+        let dens = getValue(uri, /DENSIDADE\s+([\d,]+)/);
+        let prot = getValue(uri, /PROTEÍNAS\s+(\w+)/);
+        let nit = getValue(uri, /NITRITO\s+(NEGATIVO|POSITIVO)/);
+        let leuco = getValue(uri, /LEUCOCITOS\s+([\d,]+)/);
+        let hemac = getValue(uri, /HEMÁCIAS\s+([\d,]+)/);
+        let bact = getValue(uri, /BACTÉRIAS\s+([<>\d\.]+)/);
+
+        out.push(
+            "U1 pH " + (ph || "-") +
+            " - Dens " + (dens || "-") +
+            " - Prot " + (prot ? prot.toLowerCase() : "-") +
+            " - Nit " + (nit ? (nit.toLowerCase().includes("neg") ? "neg" : "pos") : "-") +
+            " - Leuco " + (leuco || "-") +
+            " - Hem " + (hemac || "-") +
+            " - Bact " + (bact || "-")
+        );
+    }
+
+    // ===== OUTROS =====
+    add("Glic", getValue(t, /GLI[\s\S]*?RESULTADO\s+([\d,]+)/));
+    add("HDL", getValue(t, /HDL[\s\S]*?RESULTADO\s+([\d,]+)/));
+    add("LDL", getValue(t, /LDL[\s\S]*?RESULTADO\s+([\d,]+)/));
+    add("TG", getValue(t, /TRIGLICERIDES[\s\S]*?RESULTADO\s+([\d,]+)/));
+    add("TSH", getValue(t, /TSH[\s\S]*?RESULTADO\s+([\d,]+)/));
+    add("Ur", getValue(t, /URE[\s\S]*?RESULTADO\s+([\d,]+)/));
+
+    let hoje = new Date();
+    let data = hoje.toLocaleDateString('pt-BR');
+
+    document.getElementById("output").innerText =
+        "- " + data + ": " + out.join(" | ");
+}
     </script>
 </body>
 </html>
