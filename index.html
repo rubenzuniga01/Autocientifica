@@ -179,6 +179,7 @@ function processar() {
     add("TG", getValue(t, /TRIGLICERIDES[\s\S]*?RESULTADO\s+([\d,]+)/));
     add("TSH", getValue(t, /TSH[\s\S]*?RESULTADO\s+([\d,]+)/));
     add("Ur", getValue(t, /URE[\s\S]*?RESULTADO\s+([\d,]+)/));
+    add("Cr", getValue(t, /CRE - CREATININA SORO[\s\S]*?CREATININA\s+([\d,]+)/));
     add("K", getValue(t, /POT\s+([\d,]+)/));
 
     let hoje = new Date();
