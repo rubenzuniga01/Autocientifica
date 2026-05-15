@@ -169,12 +169,17 @@ function processar() {
     add("T4L", getValue(t, /T4L[\s\S]*?RESULTADO\s+([\d,]+)/));
     add("PSA", getValue(t, /PSA[\s\S]*?RESULTADO\s+([\d,]+)/));
     add("MAU", getValue(t, /RELAÇÃO\s+([\d,]+)/));
+    add("UCr", getValue(t, /CREATITINA URINARIA\s+([\d,]+)/));
+    add("RAC", getValue(t, /RELAÇÃO\s+([\d,]+)/));
     add("Glic", getValue(t, /GLI[\s\S]*?RESULTADO\s+([\d,]+)/));
+    add("HbA1C", getValue(t, /HGL[\s\S]*?HGL\s+([\d,]+)/));
+    add("COL", getValue(t, /COLESTEROL\s+([\d,]+)/));
     add("HDL", getValue(t, /HDL[\s\S]*?RESULTADO\s+([\d,]+)/));
     add("LDL", getValue(t, /LDL[\s\S]*?RESULTADO\s+([\d,]+)/));
     add("TG", getValue(t, /TRIGLICERIDES[\s\S]*?RESULTADO\s+([\d,]+)/));
     add("TSH", getValue(t, /TSH[\s\S]*?RESULTADO\s+([\d,]+)/));
     add("Ur", getValue(t, /URE[\s\S]*?RESULTADO\s+([\d,]+)/));
+    add("K", getValue(t, /POT\s+([\d,]+)/));
 
     let hoje = new Date();
     let data = hoje.toLocaleDateString('pt-BR');
